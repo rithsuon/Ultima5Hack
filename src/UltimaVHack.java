@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class UltimaVHack {
     //HP, Max HP, Str, Dex, Int, EXP, Gold,
-    private static String[] playerStatsOffsets = {"12", "14", "0E", "0F", "10", "16", "204"};
+    private static String[] playerStatsOffsets = {"12", "14", "0E", "0F", "10", "16", "204", "202"};
     //Keys, Skull keys, Gems, Black badge, Magic carpets, Magic axes
     private static String[] playerItemsOffsets = {"206", "20B", "207", "218", "20A", "240"};
     private static String[][] npcStatsOffsets = {
@@ -99,9 +99,9 @@ public class UltimaVHack {
         int choice = 0;
 
         while(true) {
-            System.out.println("Pick a stat to edit:\n0) HP\n1) Max HP\n2) Strength\n3) Dexterity\n4) Intellect\n5) Experience\n6) Gold");
+            System.out.println("Pick a stat to edit:\n0) HP\n1) Max HP\n2) Strength\n3) Dexterity\n4) Intellect\n5) Experience\n6) Gold\n7) Food");
              choice = validateInt(input);
-             if(choice >= 0 && choice <= 6) {
+             if(choice >= 0 && choice <= 7) {
                  break;
              } else {
                  System.out.println("Invalid Choice.");
@@ -117,7 +117,7 @@ public class UltimaVHack {
             offset = npcStatsOffsets[charIdx][choice];
         }
 
-        if(choice == 0 || choice == 1 || choice == 5 || choice == 6) {
+        if(choice == 0 || choice == 1 || choice == 5 || choice == 6 || choice == 7) {
             safeWriteShort(statVal, offset);
         } else {
             safeWriteByte(statVal, offset);
