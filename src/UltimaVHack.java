@@ -99,9 +99,9 @@ public class UltimaVHack {
         int choice = 0;
 
         while(true) {
-            System.out.println("Pick a stat to edit:\n0) HP\n1) Max HP\n2) Strength\n3) Dexterity\n4) Intellect\n5) Experience");
+            System.out.println("Pick a stat to edit:\n0) HP\n1) Max HP\n2) Strength\n3) Dexterity\n4) Intellect\n5) Experience\n6) Gold");
              choice = validateInt(input);
-             if(choice >= 0 && choice <= 5) {
+             if(choice >= 0 && choice <= 6) {
                  break;
              } else {
                  System.out.println("Invalid Choice.");
@@ -117,7 +117,7 @@ public class UltimaVHack {
             offset = npcStatsOffsets[charIdx][choice];
         }
 
-        if(choice == 0 || choice == 1 || choice == 5) {
+        if(choice == 0 || choice == 1 || choice == 5 || choice == 6) {
             safeWriteShort(statVal, offset);
         } else {
             safeWriteByte(statVal, offset);
