@@ -2,9 +2,14 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Scanner;
 
+/*
+    Rithrangsey Suon
+    CECS 378
+    3/21/2021
+ */
 
 public class UltimaVHack {
-    //HP, Max HP, Str, Dex, Int, EXP, Gold,
+    //HP, Max HP, Str, Dex, Int, EXP, Gold, Food
     private static String[] playerStatsOffsets = {"12", "14", "0E", "0F", "10", "16", "204", "202"};
     //Keys, Skull keys, Gems, Black badge, Magic carpets, Magic axes
     private static String[] playerItemsOffsets = {"206", "20B", "207", "218", "20A", "240"};
@@ -26,12 +31,13 @@ public class UltimaVHack {
             {"1F2", "1F4", "1EE", "1EF", "1F0", "1F6"}, //14: Saduj
     };
     private static final int MAX_SHORT_VAL = 65536;// range of unsigned int value for a short
+    private static final String SAVE_FILEPATH = "c:/Users/Rith/Documents/dos/Ultima_5/Ultima_5/SAVED.GAM"; //Change file path to locate Ultima 5 SAVED.GAM file
     private static Scanner input = new Scanner(System.in);
     private static RandomAccessFile file;
 
     public static void main(String[] args) {
         try {
-            file = new RandomAccessFile("c:/Users/Rith/Documents/dos/Ultima_5/Ultima_5/SAVED.GAM", "rw");
+            file = new RandomAccessFile(SAVE_FILEPATH, "rw"); //
             boolean inUse = true;
             while(inUse) {
                 System.out.println("Select a character to edit:\n1) Player\n2) Shamino\n3) Iolo\n4) Mariah\n5) Geoffrey" +
@@ -42,7 +48,7 @@ public class UltimaVHack {
                 } else if (choice == 1) {
                     playerMenu();
                 } else if (choice >= 2 && choice <= 15) {
-                    editStatsMenu(choice-2);
+                    editStatsMenu(choice-2); //pass index of character to stats menu
                 } else {
                     System.out.println("Invalid Choice.");
                 }
@@ -68,7 +74,7 @@ public class UltimaVHack {
                 editItemsMenu();
                 break;
             } else if (choice == 2) {
-                editStatsMenu(-1);
+                editStatsMenu(-1); //-1 indicates editing stats for the player
                 break;
             } else {
                 System.out.println("Invalid Choice.");
@@ -91,7 +97,7 @@ public class UltimaVHack {
         System.out.println("Enter a value for the item: ");
         int val = validateInt(input);
 
-        safeWriteByte(val, playerItemsOffsets[choice]);
+        safeWriteByte(val, playerItemsOffsets[choice]); //item values only write to 1 byte
     }
 
     private static void editStatsMenu(int charIdx) {
@@ -117,13 +123,14 @@ public class UltimaVHack {
             offset = npcStatsOffsets[charIdx][choice];
         }
 
-        if(choice == 0 || choice == 1 || choice == 5 || choice == 6 || choice == 7) {
+        if(choice == 0 || choice == 1 || choice == 5 || choice == 6 || choice == 7) { //allow certain stats to write to 2 bytes
             safeWriteShort(statVal, offset);
         } else {
-            safeWriteByte(statVal, offset);
+            safeWriteByte(statVal, offset); //stats that can only write to 1 byte
         }
     }
 
+    //bounds integer value to 0 - 65535 (unsigned integer range of two bytes)
     private static int checkShort(int val) {
         return val % MAX_SHORT_VAL;
     }
@@ -131,16 +138,16 @@ public class UltimaVHack {
     private static void safeWriteShort(int value, String offset) {
         value = checkShort(value); //verify value is within range of 2 bytes representation
         String hexStr = Integer.toHexString(value);
-        long offsetVal = Long.parseLong(offset, 16);
+        long offsetVal = Long.parseLong(offset, 16); //get offset value from hex -> long
         try {
             file.seek(offsetVal);
             if(hexStr.length() > 2) {
-                //get little endian integer value
+                //get little endian integer value by reversing the bytes and getting the string hex
                 value = Integer.parseInt(removeTrailingZeroes(Integer.toHexString(Integer.reverseBytes(value))), 16);
                 file.writeShort(value);
             } else {
                 file.writeByte(value);
-                file.seek(offsetVal+1);
+                file.seek(offsetVal+1); //overwrites most significant byte to zero
                 file.writeByte(0);
             }
         } catch (IOException e) {
@@ -152,12 +159,13 @@ public class UltimaVHack {
         long offsetVal = Long.parseLong(offset, 16);
         try {
             file.seek(offsetVal);
-            file.writeByte(value);
+            file.writeByte(value); //writes value to 1 Byte at offset (automatically handles overflow)
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    //helper function to validate that user gives an integer
     private static int validateInt(Scanner userInput) {
         while(!userInput.hasNextInt()) {
             System.out.println("Invalid input. Please enter a number.");
@@ -166,6 +174,7 @@ public class UltimaVHack {
         return userInput.nextInt();
     }
 
+    //helper function to remove zeros from the end of the string hex
     private static String removeTrailingZeroes(String s) {
         StringBuilder sb = new StringBuilder(s);
         while (sb.length() > 0 && sb.charAt(sb.length()-1) == '0') {
