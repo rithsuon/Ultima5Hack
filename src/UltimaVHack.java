@@ -42,7 +42,7 @@ public class UltimaVHack {
                 } else if (choice == 1) {
                     playerMenu();
                 } else if (choice >= 2 && choice <= 15) {
-                    statsMenu(choice-2);
+                    editStatsMenu(choice-2);
                 } else {
                     System.out.println("Invalid Choice.");
                 }
@@ -65,9 +65,10 @@ public class UltimaVHack {
             System.out.println("Select an option:\n1) Edit player items\n2) Edit player stats");
             int choice = validateInt(input);
             if(choice == 1) {
+                editItemsMenu();
                 break;
             } else if (choice == 2) {
-                statsMenu(-1);
+                editStatsMenu(-1);
                 break;
             } else {
                 System.out.println("Invalid Choice.");
@@ -75,7 +76,25 @@ public class UltimaVHack {
         }
     }
 
-    private static void statsMenu(int charIdx) {
+    private static void editItemsMenu() {
+        int choice = 0;
+        while(true) {
+            System.out.println("Pick an item to edit:\n0) Keys\n1) Skull keys\n2) Gems\n3) Black badge\n4) Magic carpets\n5) Magic axes");
+            choice = validateInt(input);
+            if(choice >= 0 && choice <= 5) {
+                break;
+            } else {
+                System.out.println("Invalid Choice.");
+            }
+        }
+
+        System.out.println("Enter a value for the item: ");
+        int val = validateInt(input);
+
+        safeWriteByte(val, playerItemsOffsets[choice]);
+    }
+
+    private static void editStatsMenu(int charIdx) {
         String offset;
         int choice = 0;
 
